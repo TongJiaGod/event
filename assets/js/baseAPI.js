@@ -1,7 +1,16 @@
 $.ajaxPrefilter(function(options){
     const baseUrl = 'http://ajax.frontend.itheima.net'
-    console.log(options);
+    options.headers =  {
+        Authorization: options.url.startsWith('/my') ? localStorage.getItem('token') : ''
+    }
+
     options.url = baseUrl + options.url
-    // options.header.Authorization = localStorage.getItem('token')
-    console.log(options.url);
+
+    options.complete = function(res) {
+        const { status, message } = res.responseJSON;
+        if(status ===1&&message === '身份认证失败') {
+            localStorage.removeItem('token')
+            location.href = '/login.html'
+        }
+    }
 })

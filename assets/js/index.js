@@ -5,9 +5,6 @@ $(function() {
 function getUserInfo() {
     $.ajax({
         url: '/my/userinfo',
-        headers: {
-            Authorization: localStorage.getItem('token') || ''
-        },
         method: 'get',
         success: function(res) {
             if(res.status !==0) {
@@ -15,6 +12,13 @@ function getUserInfo() {
             }
             
             renderAvatar(res.data)
+        },
+        complete: function(res) {
+            const { status, message } = res.responseJSON;
+            if(status ===1&&message === '身份认证失败') {
+                localStorage.removeItem('token')
+                location.href = '/login.html'
+            }
         }
     })
 }
